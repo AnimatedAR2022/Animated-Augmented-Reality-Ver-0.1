@@ -5,12 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class ButtonController : MonoBehaviour
 {
-    public void Execute_LearningMode()
-    {
-        Debug.Log("Begining Leaning Mode...");
-        SceneManager.LoadScene(1);
-    }
-
     public void Execute_Tutorial()
     {
         Debug.Log("Begining Tutorial...");
@@ -22,9 +16,9 @@ public class ButtonController : MonoBehaviour
         Application.Quit();
     }
 
-    public void Execute_Back(int sceneBuildIndex)
+    public void Execute_LoadScene(int sceneBuildIndex)
     {
-        Debug.Log("Returning to scene " + sceneBuildIndex + "...");
+        Debug.Log("Loading Scene " + sceneBuildIndex + "...");
         SceneManager.LoadScene(sceneBuildIndex);
     }
 }
