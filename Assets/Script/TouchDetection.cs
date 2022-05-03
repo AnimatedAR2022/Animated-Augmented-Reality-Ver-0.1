@@ -16,7 +16,19 @@ public class TouchDetection : MonoBehaviour
             {
                 if (hit.collider.gameObject.TryGetComponent<ScrewAnimation>(out ScrewAnimation target))
                 {
-                    target.StartAnimation();
+                    if (!target.unscrewed)
+                    {
+                        Debug.Log("unscrewed");
+                        target.StartAnimation();
+                    }
+                }
+                else if (hit.collider.name.Equals("Cube"))
+                {
+                    gameObject.GetComponent<AnimationProgress>().UnhideScrews();
+                    foreach (ScrewAnimation t in gameObject.GetComponent<AnimationProgress>().animatedObject)
+                    {
+                        t.ResetAnimation();
+                    }
                 }
             }
         }

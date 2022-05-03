@@ -6,6 +6,7 @@ public class ScrewAnimation : MonoBehaviour
 {
     public bool startAnimation = false;
     public bool setTransparent = false;
+    public bool unscrewed = false;
 
     [NamedArrayAttribute(new string[] { "x", "y", "z" })]
     public bool[] targetLocationControl = new bool[3];
@@ -22,8 +23,8 @@ public class ScrewAnimation : MonoBehaviour
     public float translateAnimtionTime;
     public float rotateAnimtionTime;
 
-    private Vector3 originalPosition;
-    private Vector3 originalRotation;
+    public Vector3 originalPosition;
+    public Vector3 originalRotation;
 
     private float transateAnimationRatio = 0f;
     private float rotateAnimationRatio = 0f;
@@ -33,7 +34,7 @@ public class ScrewAnimation : MonoBehaviour
     private bool completeRotation = false;
     private bool completeTranslation = false;
 
-    private void Start()
+    private void Awake()
     {
         originalPosition = this.transform.position;
         originalRotation = this.transform.rotation.eulerAngles;
@@ -52,7 +53,11 @@ public class ScrewAnimation : MonoBehaviour
     void Update()
     {
         if (!startAnimation) return;
-        if (this.transform.rotation.eulerAngles.Equals(targetRotation) && this.transform.position.Equals(targetLocation) && !setTransparent) return;
+        if (this.transform.rotation.eulerAngles.Equals(targetRotation) && this.transform.position.Equals(targetLocation) && !setTransparent)
+        {
+            startAnimation = false;
+            return;
+        }
 
         if (!this.transform.rotation.Equals(Quaternion.Euler(targetRotation)))
         {
@@ -97,10 +102,11 @@ public class ScrewAnimation : MonoBehaviour
 
     public void StartAnimation()
     {
+        unscrewed = !unscrewed;
         StartCoroutine(AnimationDelay(rotationDelay, 0));
     }
 
-    public void ResetAllVariable()
+    public void ResetAnimation()
     {
         startAnimation = false;
         setTransparent = false;
@@ -113,8 +119,11 @@ public class ScrewAnimation : MonoBehaviour
         completeRotation = false;
         completeTranslation = false;
 
-        this.transform.position = originalPosition;
-        this.transform.rotation = Quaternion.Euler(originalRotation);
+        targetLocation = originalPosition;
+        targetRotation = originalRotation;
+        originalPosition = this.transform.position;
+        originalRotation = this.transform.rotation.eulerAngles;
+        StartCoroutine(AnimationDelay(rotationDelay, 0));
     }
 
     public void DebugClick()

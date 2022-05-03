@@ -42,7 +42,6 @@ public class AnimationProgress : MonoBehaviour
 
     private void SetupUnscrewStage()
     {
-        Debug.Log("hi");
         foreach (ScrewAnimation sa in animatedObject)
         {
             if (sa.gameObject.name.Contains(screwCommonName))
@@ -60,6 +59,22 @@ public class AnimationProgress : MonoBehaviour
             {
                 sa.gameObject.GetComponent<MeshCollider>().enabled = true;
                 sa.enabled = true;
+            }
+        }
+    }
+
+    public void UnhideScrews()
+    {
+        foreach (ScrewAnimation sa in animatedObject)
+        {
+            if (sa.gameObject.name.Contains(screwCommonName))
+            {
+                if (!sa.gameObject.activeSelf)
+                {
+                    sa.setTransparent = false;
+                    sa.enabled = true;
+                    sa.gameObject.SetActive(true);
+                }
             }
         }
     }
