@@ -36,11 +36,11 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Script\AnimationProgress.cs" />
      <Compile Include="Assets\Script\ScrewAnimation.cs" />
+     <Compile Include="Assets\Script\TouchDetection.cs" />
      <Compile Include="Assets\Script\ButtonController.cs" />
      <Compile Include="Assets\Attribute\NamedArrayAttribute.cs" />
-     <Compile Include="Assets\Script\TouchDetection.cs" />
-     <Compile Include="Assets\Script\AnimationProgress.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
