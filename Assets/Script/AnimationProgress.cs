@@ -4,78 +4,158 @@ using UnityEngine;
 
 public class AnimationProgress : MonoBehaviour
 {
-    public List<ScrewAnimation> animatedObject;
-    public string screwCommonName = "";
-    public string topCoverCommonName = "";
+    [NamedArrayAttribute(new string[] { "GuideArm", "Actuator_Bolt", "Platter_Middle", "Circles", "TopCover",
+        "Screws1", "Screws2", "Screws3", "Screws4", "Screws5", "Screws6" })]
+    public Animator[] animators = new Animator[11];
 
-    private int animationStage = 0;
-    // Start is called before the first frame update
-    void Start()
+    public int animationStage = -1;
+    public float delayAnimation = 1f;
+    public float animationRatio = 1f;
+    private bool hasSetupUnscrewStage = false;
+    private bool hasSetupRest = false;
+    private bool hasSetupDiskDisplay = false;
+    private bool hasSetupPreMovement = false;
+    private bool hasSetupSlowMovement = false;
+    private bool hasSetupClosingStage = false;
+
+    private void Start()
     {
-        foreach (ScrewAnimation sa in animatedObject)
-        {
-            sa.enabled = false;
-        }
-        SetupUnscrewStage();
+        StartCoroutine(StartAnimation());
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (CheckAnimationProgression())
+        if (animationStage == 6) return;
+        if (animationStage == 0)
         {
-            SetupUncoverStage();
+            if (!hasSetupUnscrewStage)
+            {
+                StartCoroutine(SetupUnscrewStage());
+            }
+        }
+        else if (animationStage == 1)
+        {
+            if (!hasSetupRest)
+            {
+                StartCoroutine(SetupRestStage());
+            }
+        }
+        else if (animationStage == 2)
+        {
+            if (!hasSetupDiskDisplay)
+            {
+                StartCoroutine(SetupDiskDisplay());
+            }
+        }
+        else if (animationStage == 3)
+        {
+            if (!hasSetupPreMovement)
+            {
+                StartCoroutine(SetupPreMovement());
+            }
+        }
+        else if (animationStage == 4)
+        {
+            if (!hasSetupSlowMovement)
+            {
+                StartCoroutine(SetupSlowMovement());
+            }
+        }
+        else if (animationStage == 5)
+        {
+            if (!hasSetupClosingStage)
+            {
+                StartCoroutine(SetupClosingStage());
+            }
         }
     }
 
-    private bool CheckAnimationProgression()
+    private IEnumerator StartAnimation()
     {
-        foreach (ScrewAnimation sa in animatedObject)
-        {
-            if (sa.gameObject.name.Contains(screwCommonName) && sa.gameObject.activeSelf)
-            {
-                return false;
-            }
-        }
-        return true;
+        yield return new WaitForSeconds(delayAnimation);
+        animationStage = 0;
     }
 
-    private void SetupUnscrewStage()
+    private IEnumerator SetupUnscrewStage()
     {
-        foreach (ScrewAnimation sa in animatedObject)
-        {
-            if (sa.gameObject.name.Contains(screwCommonName))
-            {
-                sa.enabled = true;
-            }
-        }
+        hasSetupUnscrewStage = true;
+        yield return new WaitForSeconds(1f / animationRatio);
+        for (int i = 5; i < 11; i++)
+            animators[i].SetTrigger("Unscrew");
+        yield return new WaitForSeconds(2f / animationRatio);
+        animators[4].SetTrigger("Lift");
+        yield return new WaitForSeconds(2f / animationRatio);
+        animationStage = 1;
     }
 
-    private void SetupUncoverStage()
+    private IEnumerator SetupRestStage()
     {
-        foreach (ScrewAnimation sa in animatedObject)
+        hasSetupRest = true;
+        yield return new WaitForSeconds(2f / animationRatio);
+        for (int i = 0; i < 4; i++)
         {
-            if (sa.gameObject.name.Contains(topCoverCommonName))
-            {
-                sa.gameObject.GetComponent<MeshCollider>().enabled = true;
-                sa.enabled = true;
-            }
+            animators[i].SetTrigger("Rest");
         }
+        animationStage = 2;
     }
 
-    public void UnhideScrews()
+    private IEnumerator SetupDiskDisplay()
     {
-        foreach (ScrewAnimation sa in animatedObject)
+        hasSetupDiskDisplay = true;
+        yield return new WaitForSeconds(5f / animationRatio);
+        animators[2].SetTrigger("Float");
+        yield return new WaitForSeconds(5f / animationRatio);
+        animators[2].SetTrigger("Rest");
+        yield return new WaitForSeconds(2f / animationRatio);
+        animationStage = 3;
+    }
+
+    private IEnumerator SetupPreMovement()
+    {
+        hasSetupPreMovement = true;
+        animators[0].SetTrigger("Support");
+        animators[1].SetTrigger("Normal");
+        animators[2].SetTrigger("Normal");
+        yield return new WaitForSeconds(10f / animationRatio);
+        animationStage = 4;
+    }
+
+    private IEnumerator SetupSlowMovement()
+    {
+        hasSetupSlowMovement = true;
+        animators[1].SetTrigger("Slow");
+        animators[2].SetTrigger("Slow");
+        animators[3].SetTrigger("Outer");
+        yield return new WaitForSeconds(3f / animationRatio);
+        animators[3].SetTrigger("Inner");
+        animators[2].SetTrigger("Rest");
+        animators[1].SetTrigger("Random");
+        yield return new WaitForSeconds(2f / animationRatio);
+        animators[3].SetTrigger("Segment");
+        yield return new WaitForSeconds(2f / animationRatio);
+        animators[3].SetTrigger("Identify");
+        yield return new WaitForSeconds(4f / animationRatio);
+        animators[1].SetTrigger("Read");
+        animators[2].SetTrigger("Read");
+        animators[3].SetTrigger("Read");
+        yield return new WaitForSeconds(5f / animationRatio);
+        animators[3].SetTrigger("Rest");
+        animators[2].SetTrigger("Normal");
+        animators[1].SetTrigger("Normal");
+        yield return new WaitForSeconds(3f / animationRatio);
+        animationStage = 5;
+    }
+
+    private IEnumerator SetupClosingStage()
+    {
+        hasSetupClosingStage = true;
+        for (int i = 0; i < 11; i++)
         {
-            if (sa.gameObject.name.Contains(screwCommonName))
-            {
-                if (!sa.gameObject.activeSelf)
-                {
-                    sa.setTransparent = false;
-                    sa.enabled = true;
-                    sa.gameObject.SetActive(true);
-                }
-            }
+            if (i < 4) animators[i].SetTrigger("Rest");
+            else if (i == 4) animators[i].SetTrigger("Unlift");
+            else animators[i].SetTrigger("Screw");
         }
+        yield return new WaitForSeconds(3f / animationRatio);
+        animationStage = 6;
     }
 }
